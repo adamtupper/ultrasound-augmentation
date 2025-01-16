@@ -1,0 +1,6 @@
+[submodule "ultrabench"]
+	path = ultrabench
+	url = git@github.com:adamtupper/ultrabench.git
+[submodule "usaugment"]
+	path = usaugment
+	url = git@github.com:adamtupper/usaugment.git
