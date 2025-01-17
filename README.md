@@ -16,4 +16,4 @@ A standalone Python package (to be published on PyPI) for the ultrasound-specifi
 
 ### `usaugment-experiments`
 
-The code and documentation for running the experiments presented in the paper and reproducing the results.
+The code and documentation for running the experiments presented in the paper and reproducing the results. See the enclosed `README` for more details.
