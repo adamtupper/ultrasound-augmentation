@@ -1,0 +1,12 @@
+_target_: usaugment.augmentation.GaussianShadow
+_convert_: object
+strength:
+  - 0.25
+  - 0.8
+sigma_x:
+  - 0.01
+  - 0.2
+sigma_y:
+  - 0.01
+  - 0.2
+p: 0.5

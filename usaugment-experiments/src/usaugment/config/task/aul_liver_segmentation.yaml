@@ -1,0 +1,20 @@
+# @package _global_
+defaults:
+  - /model: efficientnetb0_unet_binary
+
+in_channels: 3
+lr: 0.000649858
+weight_decay: 0.000164148
+epochs: 200
+dropout: 0.379307
+batch_size: 128
+accumulate_grad_batches: 1
+task: segmentation
+key_metric: dice
+version: aul_liver_v5
+
+dataset:
+  _target_: usaugment.data.SegmentationDataset
+  mask_key: liver_mask
+
+task_name: ${version}_liver_segmentation

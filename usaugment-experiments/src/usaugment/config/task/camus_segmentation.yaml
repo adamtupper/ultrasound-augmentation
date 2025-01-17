@@ -1,0 +1,20 @@
+# @package _global_
+defaults:
+  - /model: efficientnetb0_unet_multiclass
+
+num_classes: 4
+in_channels: 3
+lr: 0.000459482
+weight_decay: 0.000300218
+epochs: 200
+dropout: 0.473788
+batch_size: 128
+accumulate_grad_batches: 1
+task: segmentation
+key_metric: dice
+version: camus_v4
+
+dataset:
+  _target_: usaugment.data.SegmentationDataset
+
+task_name: ${version}_segmentation

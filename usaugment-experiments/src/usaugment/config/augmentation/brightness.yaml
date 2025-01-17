@@ -1,0 +1,4 @@
+_target_: albumentations.RandomBrightnessContrast
+brightness_limit: [-0.2, 0.2]  # NOTE: This is reduce from 0.5 to 0.2 in our new configuration
+contrast_limit: [0.0, 0.0]
+p: 0.5

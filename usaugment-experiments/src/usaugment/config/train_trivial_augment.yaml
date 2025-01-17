@@ -1,0 +1,27 @@
+defaults:
+  - _self_
+  - task: aul_liver_segmentation
+
+# Task-independent configuration
+data_dir: ???
+output_dir: ???
+seed: 1
+workers: 14
+prefetch_factor: 4
+fast_dev_run: False
+enable_progress_bar: False
+offline: True
+precision: 16-mixed
+
+# Hydra configuration overrides
+hydra:
+  run:
+    dir: ${output_dir}/outputs/${now:%Y-%m-%d_%H-%M-%S}
+  sweep:
+    dir: ${output_dir}/multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  job:
+    chdir: True
+
+# Trivial augment configuration
+transforms: "bilateral_filter,brightness,contrast,depth_attenuation,flip_horizontal,flip_vertical,gamma,gaussian_noise,gaussian_shadow,haze_artifact,identity,random_crop,rotate,translate,zoom"
+num_operations: 2

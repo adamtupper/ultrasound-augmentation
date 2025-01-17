@@ -1,0 +1,22 @@
+# @package _global_
+defaults:
+  - /model: efficientnetb0_multiclass
+
+in_channels: 3
+num_classes: 8
+label_smoothing: 0.0
+lr: 0.000877412
+weight_decay: 0.00381002
+epochs: 200
+dropout: 0.406518
+batch_size: 128
+accumulate_grad_batches: 1
+task: classification
+key_metric: avg_precision
+version: mmotu_v2
+
+dataset:
+  _target_: usaugment.data.ClassificationDataset
+  label_key: label
+
+task_name: ${version}_classification

@@ -1,0 +1,20 @@
+# @package _global_
+defaults:
+  - /model: efficientnetb0_unet_binary
+
+in_channels: 3
+lr: 0.000277414
+weight_decay: 0.000343856
+epochs: 200
+dropout: 0.454402
+batch_size: 128
+accumulate_grad_batches: 1
+task: segmentation
+key_metric: dice
+version: stanford_thyroid_v4
+
+dataset:
+  _target_: usaugment.data.SegmentationDataset
+  mask_key: tumor_mask
+
+task_name: ${version}_segmentation

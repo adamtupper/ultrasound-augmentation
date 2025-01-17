@@ -1,0 +1,10 @@
+_target_: usaugment.augmentation.BilateralFilter
+_convert_: object
+sigma_spatial:
+  - 0.05
+  - 1.0
+sigma_color:
+  - 0.05
+  - 1.0
+window_size: 5
+p: 0.5

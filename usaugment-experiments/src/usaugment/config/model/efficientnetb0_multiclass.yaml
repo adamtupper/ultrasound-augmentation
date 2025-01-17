@@ -1,0 +1,18 @@
+_target_: usaugment.models.classification.MultiClassClassificationModel
+
+model:
+  _target_: usaugment.models.efficientnet.EfficientNetBN
+  model_name: efficientnet-b0
+  pretrained: True
+  in_channels: ${in_channels}
+  num_classes: ${num_classes}
+  dropout_rate: ${dropout}
+
+optimizer_partial:
+  _partial_: true
+  _target_: torch.optim.Adam
+  lr: ${lr}
+  weight_decay: ${weight_decay}
+
+num_classes: ${num_classes}
+label_smoothing: ${label_smoothing}

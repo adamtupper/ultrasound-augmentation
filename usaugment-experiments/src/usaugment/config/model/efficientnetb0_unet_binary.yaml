@@ -1,0 +1,15 @@
+_target_: usaugment.models.segmentation.BinarySegmentationModel
+
+model:
+  _target_: monai.networks.nets.FlexibleUNet
+  in_channels: ${in_channels}
+  out_channels: 1
+  backbone: efficientnet-b0
+  pretrained: True
+  dropout: ${dropout}
+
+optimizer_partial:
+  _partial_: true
+  _target_: torch.optim.Adam
+  lr: ${lr}
+  weight_decay: ${weight_decay}

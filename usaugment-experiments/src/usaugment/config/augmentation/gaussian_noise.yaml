@@ -1,0 +1,6 @@
+_target_: albumentations.GaussNoise
+var_limit: 0.0225
+mean: 0
+per_channel: False
+noise_scale_factor: 1
+p: 0.5

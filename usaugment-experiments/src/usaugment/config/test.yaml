@@ -1,0 +1,9 @@
+defaults:
+  - train
+  - _self_
+
+workers: 11
+prefetch_factor: 2
+enable_progress_bar: True
+
+results_dir: ???

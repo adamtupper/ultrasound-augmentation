@@ -1,0 +1,20 @@
+# @package _global_
+defaults:
+  - /model: efficientnetb0_unet_binary
+
+in_channels: 3
+lr: 0.0000201554
+weight_decay: 0.000130376
+epochs: 100
+dropout: 0.322085
+batch_size: 128
+accumulate_grad_batches: 1
+task: segmentation
+key_metric: dice
+version: aul_mass_v5
+
+dataset:
+  _target_: usaugment.data.SegmentationDataset
+  mask_key: mass_mask
+
+task_name: ${version}_mass_segmentation

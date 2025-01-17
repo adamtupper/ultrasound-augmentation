@@ -1,0 +1,2 @@
+_target_: albumentations.VerticalFlip
+p: 0.5

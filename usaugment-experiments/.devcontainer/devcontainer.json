@@ -1,0 +1,17 @@
+{
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "workspaceFolder": "/home/developer/workspace",
+    "workspaceMount": "source=remote-workspace-ultrasound-augmentation,target=/home/developer/workspace,type=volume",
+    "mounts": [
+        "source=/home-local2/adtup.extra.nobkp,target=/home-local2/adtup.extra.nobkp,type=bind,consistency=cached",
+        "source=/media/adtup/archives,target=/media/adtup/archives,type=bind,consistency=cached"
+    ],
+    "runArgs": [
+        "--gpus=all",
+        "--ipc=host"
+    ],
+    "remoteUser": "developer",
+    "postCreateCommand": "cd /home/developer/workspace && git clone --recursive git@github.com:adamtupper/ultrasound-augmentation.git && cd ultrasound-augmentation/.devcontainer && bash post_create_script.sh"
+}

@@ -1,0 +1,6 @@
+defaults:
+  - train
+  - _self_
+
+optuna_study_name: ${task_name}_hparam_study
+optuna_log_path: ${output_dir}/${optuna_study_name}.log

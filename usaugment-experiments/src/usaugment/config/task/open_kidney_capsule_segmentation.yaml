@@ -1,0 +1,21 @@
+# @package _global_
+defaults:
+  - /model: efficientnetb0_unet_binary
+
+num_classes: 2
+in_channels: 3
+lr: 0.000753235
+weight_decay: 0.000236798
+epochs: 200
+dropout: 0.311543
+batch_size: 128
+accumulate_grad_batches: 1
+task: segmentation
+key_metric: dice
+version: open_kidney_v3
+
+dataset:
+  _target_: usaugment.data.SegmentationDataset
+  mask_key: capsule_mask
+
+task_name: ${version}_capsule_segmentation

@@ -1,0 +1,5 @@
+_target_: albumentations.Rotate
+limit: [-30, 30]
+border_mode: 0
+value: 0
+p: 0.5
