@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "usaugment"
 version = "0.0.1"
 authors = [
-  { name="Adam Tupper", email="adam.tupper@icloud.com" },
+  { name="Adam Tupper", email="XXX" },
 ]
 description = "Ultrasound augmentation."
 readme = "README.md"

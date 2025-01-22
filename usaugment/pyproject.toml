@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "usaugment"
 version = "1.0.0"
 authors = [
-  { name="Adam Tupper", email="adam.tupper.1@ulaval.ca" },
+  { name="Adam Tupper", email="XXX" },
 ]
 description = "Ultrasound-specific image transforms for training deep neural networks."
 readme = "README.md"

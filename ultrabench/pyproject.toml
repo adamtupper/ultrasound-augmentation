@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "ultrabench"
 version = "0.0.1"
 authors = [
-  { name="Adam Tupper", email="adam.tupper.1@ulaval.ca" },
+  { name="Adam Tupper", email="XXX" },
 ]
 description = "A standardized benchmark of ultrasound image analysis tasks."
 readme = "README.md"

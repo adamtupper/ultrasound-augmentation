@@ -116,4 +116,4 @@ If you use our code for your research, please cite our paper!
 
 We welcome contributions to the [UltraBench](https://github.com/adamtupper/ultrabench) and [USAugment](https://github.com/adamtupper/usaugment) packages released with this work. For more information, please visit the dedicated repositories.
 
-If you have any questions related to trying to replicate our experiments, please [open an issue](https://github.com/adamtupper/usaugment-experiments/issues) or email us ([adam.tupper.1@ulaval.ca](mailto:adam.tupper.1@ulaval.ca)) and we'll do our best to help you.
+If you have any questions related to trying to replicate our experiments, please [open an issue](https://github.com/adamtupper/usaugment-experiments/issues) or email us and we'll do our best to help you.
