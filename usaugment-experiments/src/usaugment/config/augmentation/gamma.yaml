@@ -1,3 +1,0 @@
-_target_: albumentations.RandomGamma
-gamma_limit: [80, 120]
-p: 0.5

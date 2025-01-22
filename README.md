@@ -1,19 +1,16 @@
 # Revisiting Data Augmentation for Ultrasound Images
 
-This repository contains the official source code for our article Revisiting Data Augmentation for Ultrasound Images.
+> [!IMPORTANT]
+> This repository serves as a landing page for the packages and official source code for our article [Revisiting Data Augmentation for Ultrasound Images]().
 
-## Organization
+## `ultrabench`
 
-Our source code is organized into three directories:
+[UltraBench](https://github.com/adamtupper/ultrabench) is a standardized benchmark of ultrasound image classification and semantic segmentation tasks for training and evaluating machine learning models.
 
-### `ultrabench`
+## `usaugment`
 
-The command line application for UltraBench (to be published on PyPI) for preparing the datasets and tasks supported by the benchmark. See the enclosed `README` for more details.
+[USAugment](https://github.com/adamtupper/usaugment) is a Python package that provides implementations of the ultrasound-specific data augmentations to use when training machine learning models for ultrasound image analysis tasks.
 
-### `usaugment`
+## `usaugment-experiments`
 
-A standalone Python package (to be published on PyPI) for the ultrasound-specific augmentations implemented and evaluated in the paper (Depth Attenuation, Gaussian Shadow, Haze Artifact and Speckle Reduction). See the enclosed `README` for more details.
-
-### `usaugment-experiments`
-
-The code and documentation for running the experiments presented in the paper and reproducing the results. See the enclosed `README` for more details.
+The code and documentation for running the experiments presented in the paper and reproducing the results.
