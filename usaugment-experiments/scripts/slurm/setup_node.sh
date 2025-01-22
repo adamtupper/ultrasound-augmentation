@@ -19,7 +19,7 @@ export HYDRA_FULL_ERROR=1
 
 # Copy data and code to compute node ($1 is the dataset name)
 tar -xf $project/data/$1.tar.gz -C $SLURM_TMPDIR
-rsync -a $project/ultrasound-augmentation $SLURM_TMPDIR --exclude-from=$project/ultrasound-augmentation/.gitignore
+rsync -a $project/usaugment-experiments $SLURM_TMPDIR --exclude-from=$project/usaugment-experiments/.gitignore
 
 # Create virtual environment
 virtualenv --no-download $SLURM_TMPDIR/env
@@ -27,8 +27,8 @@ source $SLURM_TMPDIR/env/bin/activate
 
 # Install package and dependencies
 pip install --no-index --upgrade pip
-pip install --no-index -r $SLURM_TMPDIR/ultrasound-augmentation/requirements_cc.txt
-pip install --no-index -e $SLURM_TMPDIR/ultrasound-augmentation
+pip install --no-index -r $SLURM_TMPDIR/usaugment-experiments/requirements_cc.txt
+pip install --no-index -e $SLURM_TMPDIR/usaugment-experiments
 
 # Change to working directory
 cd $SLURM_TMPDIR

@@ -67,7 +67,7 @@ def parse_args():
     parser.add_argument(
         "--version",
         type=int,
-        help="The version number to assigne the processed dataset",
+        help="The version number to assign the processed dataset",
         required=True,
     )
 
@@ -97,31 +97,45 @@ def extract_images_and_masks(dataset_dir, output_dir):
     os.makedirs(os.path.join(output_dir, "masks", "scan"), exist_ok=True)
     os.makedirs(os.path.join(output_dir, "masks", "structures"), exist_ok=True)
 
-    for nifti_file in glob.glob(os.path.join(dataset_dir, "database_nifti", "**", "*_half_sequence*.nii.gz")):
+    for nifti_file in glob.glob(
+        os.path.join(dataset_dir, "database_nifti", "**", "*_half_sequence*.nii.gz")
+    ):
         images = nib.load(nifti_file).get_fdata().astype(np.uint8)
         patient, view = nifti_file.split("/")[-1].split("_")[:2]
         for i in range(images.shape[2]):
-            image = np.rot90(images[:, :, i], axes=(1, 0)).astype(np.uint8)  # Rotate the image 90 degrees clockwise
-            output_filename = f"{patient}_view{view}_frame{i+1}.png"
+            image = np.rot90(images[:, :, i], axes=(1, 0)).astype(
+                np.uint8
+            )  # Rotate the image 90 degrees clockwise
+            output_filename = f"{patient}_view{view}_frame{i + 1}.png"
             if "_gt" in nifti_file:
                 skimage.io.imsave(
-                    os.path.join(output_dir, "masks", "structures", output_filename), image, check_contrast=False
+                    os.path.join(output_dir, "masks", "structures", output_filename),
+                    image,
+                    check_contrast=False,
                 )
             else:
                 # Generate the scan mask
                 scan_mask = segment_fan(image)
                 skimage.io.imsave(
-                    os.path.join(output_dir, "masks", "scan", output_filename), scan_mask, check_contrast=False
+                    os.path.join(output_dir, "masks", "scan", output_filename),
+                    scan_mask,
+                    check_contrast=False,
                 )
 
                 # Save the image
-                skimage.io.imsave(os.path.join(output_dir, "images", output_filename), image, check_contrast=False)
+                skimage.io.imsave(
+                    os.path.join(output_dir, "images", output_filename),
+                    image,
+                    check_contrast=False,
+                )
 
 
 def extract_metadata(dataset_dir):
     """Extract the metadata from the ".cfg" files."""
     metadata = []
-    for file_path in glob.glob(os.path.join(dataset_dir, "database_nifti", "**", "*.cfg")):
+    for file_path in glob.glob(
+        os.path.join(dataset_dir, "database_nifti", "**", "*.cfg")
+    ):
         patient_id, filename = file_path.split("/")[-2:]
         patient_id = int(patient_id.removeprefix("patient"))
         view = filename.removesuffix(".cfg").split("_")[-1]
@@ -169,17 +183,25 @@ def main():
 
     # Split the dataset into training, validation, and test sets
     splitter = GroupShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
-    train_val_indices, test_indices = next(splitter.split(X=metadata, groups=metadata["patient"]))
+    train_val_indices, test_indices = next(
+        splitter.split(X=metadata, groups=metadata["patient"])
+    )
     train_val_examples = metadata.iloc[train_val_indices]
     test_examples = metadata.iloc[test_indices]
 
     splitter = GroupShuffleSplit(n_splits=1, test_size=0.1, random_state=42)
-    train_indices, val_indices = next(splitter.split(X=train_val_examples, groups=train_val_examples["patient"]))
+    train_indices, val_indices = next(
+        splitter.split(X=train_val_examples, groups=train_val_examples["patient"])
+    )
     train_examples = train_val_examples.iloc[train_indices]
     val_examples = train_val_examples.iloc[val_indices]
 
     # Save the training, validation, and test examples as JSON files
-    for split, examples in [("train", train_examples), ("validation", val_examples), ("test", test_examples)]:
+    for split, examples in [
+        ("train", train_examples),
+        ("validation", val_examples),
+        ("test", test_examples),
+    ]:
         file_path = os.path.join(output_dir, f"{split}.json")
         with open(file_path, "w") as f:
             json.dump(examples.to_dict(orient="records"), f, indent=4)

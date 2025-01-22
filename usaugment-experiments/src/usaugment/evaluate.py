@@ -21,7 +21,9 @@ SLURMEnvironment.detect = lambda: False
 def main(config: DictConfig) -> None:
     # Check config for missing keys
     if OmegaConf.missing_keys(config):
-        raise RuntimeError(f"Got missing keys in config:\n{OmegaConf.missing_keys(config)}")
+        raise RuntimeError(
+            f"Got missing keys in config:\n{OmegaConf.missing_keys(config)}"
+        )
 
     # Configure transforms
     _, test_transform = get_data_loader_transforms(config)
@@ -31,7 +33,9 @@ def main(config: DictConfig) -> None:
 
     # Evaluate each model checkpoint
     results = []
-    checkpoint_paths = glob.glob(os.path.join(config.results_dir, "**/*.ckpt"), recursive=True)
+    checkpoint_paths = glob.glob(
+        os.path.join(config.results_dir, "**/*.ckpt"), recursive=True
+    )
     for checkpoint_path in checkpoint_paths:
         augmentation = checkpoint_path.removeprefix(config.results_dir).split("/")[0]
         seed = checkpoint_path.removeprefix(config.results_dir).split("/")[1]
@@ -43,7 +47,7 @@ def main(config: DictConfig) -> None:
 
         # Setup the trainer
         logger = CometLogger(
-            project_name="ultrasound-augmentation",
+            project_name="usaugment-experiments",
             log_code=False,
             log_graph=False,
             auto_log_co2=False,
@@ -81,7 +85,9 @@ def main(config: DictConfig) -> None:
     df.to_csv(f"{config.task_name}_results.csv", index=False)
 
     # Display the mean and std. dev. of the key metric for each augmentation
-    summary = df.groupby("augmentation")[f"test/{config.key_metric}"].agg(mean="mean", std="std")
+    summary = df.groupby("augmentation")[f"test/{config.key_metric}"].agg(
+        mean="mean", std="std"
+    )
     summary["rank"] = summary["mean"].rank(ascending=False)
     summary = summary.sort_values(by="mean", ascending=False)
     summary = summary.reset_index()

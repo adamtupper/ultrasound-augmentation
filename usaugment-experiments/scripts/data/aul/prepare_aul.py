@@ -64,7 +64,7 @@ def parse_args():
     parser.add_argument(
         "--version",
         type=int,
-        help="The version number to assigne the processed dataset",
+        help="The version number to assign the processed dataset",
         required=True,
     )
 
@@ -73,10 +73,14 @@ def parse_args():
     assert os.path.exists(args.output_dir), "output_dir must be an existing directory"
     assert not os.path.exists(
         os.path.join(args.output_dir, OUTPUT_NAME_MASS.format(args.version))
-    ), "a version of the mass classification/segmentation dataset with this version number already exists"
+    ), (
+        "a version of the mass classification/segmentation dataset with this version number already exists"
+    )
     assert not os.path.exists(
         os.path.join(args.output_dir, OUTPUT_NAME_LIVER.format(args.version))
-    ), "a version of the liver segmentation dataset with this version number already exists"
+    ), (
+        "a version of the liver segmentation dataset with this version number already exists"
+    )
 
     return args
 
@@ -87,9 +91,15 @@ def collect_examples(dataset_dir):
         images = glob.glob(f"{dataset_dir}/{class_name}/image/*.jpg")
         for image_path in images:
             filename = os.path.basename(image_path).removesuffix(".jpg")
-            scan_polygon_path = os.path.join(dataset_dir, class_name, "segmentation/outline", f"{filename}.json")
-            liver_polygon_path = os.path.join(dataset_dir, class_name, "segmentation/liver", f"{filename}.json")
-            mass_polygon_path = os.path.join(dataset_dir, class_name, "segmentation/mass", f"{filename}.json")
+            scan_polygon_path = os.path.join(
+                dataset_dir, class_name, "segmentation/outline", f"{filename}.json"
+            )
+            liver_polygon_path = os.path.join(
+                dataset_dir, class_name, "segmentation/liver", f"{filename}.json"
+            )
+            mass_polygon_path = os.path.join(
+                dataset_dir, class_name, "segmentation/mass", f"{filename}.json"
+            )
 
             has_liver_polygon = os.path.exists(liver_polygon_path)
             has_mass_polygon = os.path.exists(mass_polygon_path)
@@ -106,7 +116,9 @@ def collect_examples(dataset_dir):
                 "label": CLASS_TO_LABEL[class_name],
                 "image": f"images/{new_filename}.jpg",
                 "scan_mask": f"masks/scan/{new_filename}.png",
-                "liver_mask": f"masks/liver/{new_filename}.png" if has_liver_polygon else None,
+                "liver_mask": f"masks/liver/{new_filename}.png"
+                if has_liver_polygon
+                else None,
                 "mass_mask": f"masks/mass/{new_filename}.png"
                 if (has_mass_polygon or CLASS_TO_LABEL[class_name] == 0)
                 else None,
@@ -179,7 +191,7 @@ def generate_masks(output_dir, df):
 
     for _, example in df.iterrows():
         image = io.imread(example["image_path"])
-            
+
         if example["scan_polygon_path"]:
             scan_mask = generate_mask(image.shape[:2], example["scan_polygon_path"])
             scan_mask_path = os.path.join(scan_mask_dir, f"{example['filename']}.png")
@@ -188,12 +200,12 @@ def generate_masks(output_dir, df):
             scan_mask = generate_scan_mask(example["image_path"])
             scan_mask_path = os.path.join(scan_mask_dir, f"{example['filename']}.png")
             io.imsave(scan_mask_path, scan_mask, check_contrast=False)
-        
+
         if example["liver_mask"]:
             liver_mask = generate_mask(image.shape[:2], example["liver_polygon_path"])
             liver_mask_path = os.path.join(liver_mask_dir, f"{example['filename']}.png")
             io.imsave(liver_mask_path, liver_mask, check_contrast=False)
-        
+
         if example["mass_mask"]:
             if os.path.exists(example["mass_polygon_path"]):
                 mass_mask = generate_mask(image.shape[:2], example["mass_polygon_path"])
@@ -206,7 +218,13 @@ def generate_masks(output_dir, df):
 
 def save_examples(output_dir, df, split):
     """Save the examples to a JSON file."""
-    columns_to_drop = ["filename", "image_path", "scan_polygon_path", "liver_polygon_path", "mass_polygon_path"]
+    columns_to_drop = [
+        "filename",
+        "image_path",
+        "scan_polygon_path",
+        "liver_polygon_path",
+        "mass_polygon_path",
+    ]
     df = df.drop(columns=columns_to_drop)
     examples = df.to_dict(orient="records")
     with open(os.path.join(output_dir, f"{split}.json"), "w") as f:
@@ -234,26 +252,42 @@ def main():
     print(f"Total number of examples: {len(df)}")
 
     # Separate the test set
-    train_val_df, test_df = train_test_split(df, test_size=0.2, random_state=42, shuffle=True, stratify=df["label"])
+    train_val_df, test_df = train_test_split(
+        df, test_size=0.2, random_state=42, shuffle=True, stratify=df["label"]
+    )
 
     # Separate the training and validation sets
     train_df, val_df = train_test_split(
-        train_val_df, test_size=0.1, random_state=42, shuffle=True, stratify=train_val_df["label"]
+        train_val_df,
+        test_size=0.1,
+        random_state=42,
+        shuffle=True,
+        stratify=train_val_df["label"],
     )
 
     # Create mass classification/segmentation dataset
     output_dir = os.path.join(args.output_dir, OUTPUT_NAME_MASS.format(args.version))
-    for split, subset_df in [("train", train_df), ("validation", val_df), ("test", test_df)]:
+    for split, subset_df in [
+        ("train", train_df),
+        ("validation", val_df),
+        ("test", test_df),
+    ]:
         copy_images(output_dir, subset_df)
         generate_masks(output_dir, subset_df)
         save_examples(output_dir, subset_df, split)
         save_version_info(output_dir, args.version)
 
-        print(f"Mass classification/segmentation - Number of {split} examples: {len(subset_df)}")
+        print(
+            f"Mass classification/segmentation - Number of {split} examples: {len(subset_df)}"
+        )
 
     # Create liver segmentation dataset
     output_dir = os.path.join(args.output_dir, OUTPUT_NAME_LIVER.format(args.version))
-    for split, subset_df in [("train", train_df), ("validation", val_df), ("test", test_df)]:
+    for split, subset_df in [
+        ("train", train_df),
+        ("validation", val_df),
+        ("test", test_df),
+    ]:
         subset_df = subset_df.dropna(subset=["liver_mask"])
         copy_images(output_dir, subset_df)
         generate_masks(output_dir, subset_df)

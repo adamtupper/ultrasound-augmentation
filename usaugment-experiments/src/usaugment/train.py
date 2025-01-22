@@ -19,7 +19,9 @@ SLURMEnvironment.detect = lambda: False
 def main(config: DictConfig) -> None:
     # Check config for missing keys
     if OmegaConf.missing_keys(config):
-        raise RuntimeError(f"Got missing keys in config:\n{OmegaConf.missing_keys(config)}")
+        raise RuntimeError(
+            f"Got missing keys in config:\n{OmegaConf.missing_keys(config)}"
+        )
 
     # Seed everything
     L.seed_everything(config.seed)
@@ -35,9 +37,11 @@ def main(config: DictConfig) -> None:
     model = instantiate(config.model)
 
     # Setup the trainer
-    checkpoint_callback = ModelCheckpoint(monitor=f"val/{config.key_metric}", mode="max", save_top_k=1)
+    checkpoint_callback = ModelCheckpoint(
+        monitor=f"val/{config.key_metric}", mode="max", save_top_k=1
+    )
     logger = CometLogger(
-        project_name="ultrasound-augmentation",
+        project_name="usaugment-experiments",
         log_code=False,
         log_graph=False,
         auto_log_co2=False,

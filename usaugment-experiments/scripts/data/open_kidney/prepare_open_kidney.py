@@ -64,7 +64,7 @@ def parse_args():
     parser.add_argument(
         "--version",
         type=int,
-        help="The version number to assigne the processed dataset",
+        help="The version number to assign the processed dataset",
         required=True,
     )
 
@@ -130,12 +130,23 @@ def main():
 
     # Load the metadata and extract transplant labels from the comments
     metadata = pd.read_csv(os.path.join(args.dataset_dir, CLINICAL_METADATA_FILE))
-    metadata["quality"] = metadata["file_attributes"].apply(lambda x: ast.literal_eval(str(x)).get("Quality", None))
-    metadata["view"] = metadata["file_attributes"].apply(lambda x: ast.literal_eval(str(x)).get("View", None))
-    metadata["comments"] = metadata["file_attributes"].apply(lambda x: ast.literal_eval(str(x)).get("Comments", None))
-    metadata["transplant"] = metadata["comments"].apply(lambda x: "transplant" in x.lower())
+    metadata["quality"] = metadata["file_attributes"].apply(
+        lambda x: ast.literal_eval(str(x)).get("Quality", None)
+    )
+    metadata["view"] = metadata["file_attributes"].apply(
+        lambda x: ast.literal_eval(str(x)).get("View", None)
+    )
+    metadata["comments"] = metadata["file_attributes"].apply(
+        lambda x: ast.literal_eval(str(x)).get("Comments", None)
+    )
+    metadata["transplant"] = metadata["comments"].apply(
+        lambda x: "transplant" in x.lower()
+    )
     metadata["file_id"] = metadata["filename"].map(lambda x: x.split("_")[1])
-    metadata.drop(columns=["file_attributes", "region_attributes", "region_shape_attributes"], inplace=True)
+    metadata.drop(
+        columns=["file_attributes", "region_attributes", "region_shape_attributes"],
+        inplace=True,
+    )
 
     # Keep only one entry per image (only the region annotation are different) and remove the duplicates
     metadata = metadata.drop_duplicates("file_id")
@@ -154,34 +165,62 @@ def main():
 
     for _, row in metadata.iterrows():
         # Load, convert to single-channel, and save the image
-        image = skimage.io.imread(os.path.join(args.dataset_dir, "images", row["filename"]))
+        image = skimage.io.imread(
+            os.path.join(args.dataset_dir, "images", row["filename"])
+        )
         if image.ndim == 3:
             image = np.mean(image, axis=-1).astype(np.uint8)
         skimage.io.imsave(os.path.join(image_dir, row["filename"]), image)
 
         # Generate and save the scan mask
         scan_mask = generate_scan_mask(image)
-        skimage.io.imsave(os.path.join(scan_mask_dir, row["filename"]), scan_mask, check_contrast=False)
+        skimage.io.imsave(
+            os.path.join(scan_mask_dir, row["filename"]),
+            scan_mask,
+            check_contrast=False,
+        )
 
         # Copy the capsule and regions masks
         for mask in ["capsule", "regions"]:
-            mask_file = os.path.join(args.dataset_dir, "labels", f"reviewed_masks_{SONOGRAPHER}", mask, row["filename"])
-            shutil.copy(mask_file, os.path.join(output_dir, "masks", mask, row["filename"]))
+            mask_file = os.path.join(
+                args.dataset_dir,
+                "labels",
+                f"reviewed_masks_{SONOGRAPHER}",
+                mask,
+                row["filename"],
+            )
+            shutil.copy(
+                mask_file, os.path.join(output_dir, "masks", mask, row["filename"])
+            )
 
     # Add relative paths to the images and masks
     metadata["image"] = metadata["filename"].map(lambda x: os.path.join("images", x))
-    metadata["scan_mask"] = metadata["filename"].map(lambda x: os.path.join("masks", "scan", x))
-    metadata["capsule_mask"] = metadata["filename"].map(lambda x: os.path.join("masks", "capsule", x))
-    metadata["regions_mask"] = metadata["filename"].map(lambda x: os.path.join("masks", "regions", x))
+    metadata["scan_mask"] = metadata["filename"].map(
+        lambda x: os.path.join("masks", "scan", x)
+    )
+    metadata["capsule_mask"] = metadata["filename"].map(
+        lambda x: os.path.join("masks", "capsule", x)
+    )
+    metadata["regions_mask"] = metadata["filename"].map(
+        lambda x: os.path.join("masks", "regions", x)
+    )
 
     # Separate the test set
     train_val_examples, test_examples = train_test_split(
-        metadata, test_size=0.2, random_state=42, shuffle=True, stratify=metadata["view"]
+        metadata,
+        test_size=0.2,
+        random_state=42,
+        shuffle=True,
+        stratify=metadata["view"],
     )
 
     # Separate the training and validation sets
     train_examples, val_examples = train_test_split(
-        train_val_examples, test_size=0.1, random_state=42, shuffle=True, stratify=train_val_examples["view"]
+        train_val_examples,
+        test_size=0.1,
+        random_state=42,
+        shuffle=True,
+        stratify=train_val_examples["view"],
     )
 
     print(f"# of training examples: {len(train_examples)}")
@@ -189,7 +228,11 @@ def main():
     print(f"# of test examples: {len(test_examples)}")
 
     # Save the training, validation, and test indices to a JSON file
-    for split, subset in [("train", train_examples), ("validation", val_examples), ("test", test_examples)]:
+    for split, subset in [
+        ("train", train_examples),
+        ("validation", val_examples),
+        ("test", test_examples),
+    ]:
         subset = subset.to_dict(orient="records")
 
         with open(os.path.join(output_dir, f"{split}.json"), "w") as f:

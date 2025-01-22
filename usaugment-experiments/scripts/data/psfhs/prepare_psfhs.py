@@ -52,7 +52,7 @@ def parse_args():
     parser.add_argument(
         "--version",
         type=int,
-        help="The version number to assigne the processed dataset",
+        help="The version number to assign the processed dataset",
         required=True,
     )
 
@@ -118,7 +118,11 @@ def main():
         image = sitk.GetArrayFromImage(sitk.ReadImage(image_path))
         image = image.mean(axis=0).astype(np.uint8) if image.ndim == 3 else image
         io.imsave(
-            os.path.join(output_dir, "images", os.path.basename(image_path).replace(".mha", ".png")),
+            os.path.join(
+                output_dir,
+                "images",
+                os.path.basename(image_path).replace(".mha", ".png"),
+            ),
             image,
             check_contrast=False,
         )
@@ -126,7 +130,12 @@ def main():
         # Generate a scan mask
         mask = generate_scan_mask(image)
         io.imsave(
-            os.path.join(output_dir, "masks", "scan", os.path.basename(image_path).replace(".mha", ".png")),
+            os.path.join(
+                output_dir,
+                "masks",
+                "scan",
+                os.path.basename(image_path).replace(".mha", ".png"),
+            ),
             mask,
             check_contrast=False,
         )
@@ -135,7 +144,12 @@ def main():
         mask_path = image_path.replace("image_mha", "label_mha")
         mask = sitk.GetArrayFromImage(sitk.ReadImage(mask_path))
         io.imsave(
-            os.path.join(output_dir, "masks", "psfh", os.path.basename(mask_path).replace(".mha", ".png")),
+            os.path.join(
+                output_dir,
+                "masks",
+                "psfh",
+                os.path.basename(mask_path).replace(".mha", ".png"),
+            ),
             mask,
             check_contrast=False,
         )
@@ -143,9 +157,17 @@ def main():
         # Add the example to the list
         examples.append(
             {
-                "image": os.path.join("images", os.path.basename(image_path).replace(".mha", ".png")),
-                "scan_mask": os.path.join("masks", "scan", os.path.basename(image_path).replace(".mha", ".png")),
-                "psfh_mask": os.path.join("masks", "psfh", os.path.basename(mask_path).replace(".mha", ".png")),
+                "image": os.path.join(
+                    "images", os.path.basename(image_path).replace(".mha", ".png")
+                ),
+                "scan_mask": os.path.join(
+                    "masks",
+                    "scan",
+                    os.path.basename(image_path).replace(".mha", ".png"),
+                ),
+                "psfh_mask": os.path.join(
+                    "masks", "psfh", os.path.basename(mask_path).replace(".mha", ".png")
+                ),
             }
         )
 
@@ -154,13 +176,21 @@ def main():
     print(f"Number of examples: {len(examples)}")
 
     # Separate the test set
-    train_val_examples, test_examples = train_test_split(examples, test_size=0.2, random_state=42, shuffle=True)
+    train_val_examples, test_examples = train_test_split(
+        examples, test_size=0.2, random_state=42, shuffle=True
+    )
 
     # Separate the training and validation sets
-    train_examples, val_examples = train_test_split(train_val_examples, test_size=0.1, random_state=42, shuffle=True)
+    train_examples, val_examples = train_test_split(
+        train_val_examples, test_size=0.1, random_state=42, shuffle=True
+    )
 
     # Save the training, validation, and test indices to a JSON file
-    for split, subset in [("train", train_examples), ("validation", val_examples), ("test", test_examples)]:
+    for split, subset in [
+        ("train", train_examples),
+        ("validation", val_examples),
+        ("test", test_examples),
+    ]:
         subset = subset.to_dict(orient="records")
 
         with open(os.path.join(output_dir, f"{split}.json"), "w") as f:

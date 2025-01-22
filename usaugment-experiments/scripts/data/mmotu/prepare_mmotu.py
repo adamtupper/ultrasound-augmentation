@@ -66,7 +66,7 @@ def parse_args():
     parser.add_argument(
         "--version",
         type=int,
-        help="The version number to assigne the processed dataset",
+        help="The version number to assign the processed dataset",
         required=True,
     )
 
@@ -147,12 +147,19 @@ def process_examples(dataset_dir, output_dir, split):
     examples = []
     for filename in filenames:
         image_path = os.path.join(dataset_dir, "OTU_2d", "images", f"{filename}.JPG")
-        binary_mask_path = os.path.join(dataset_dir, "OTU_2d", "annotations", f"{filename}_binary.PNG")
-        multiclass_mask_path = os.path.join(dataset_dir, "OTU_2d", "annotations", f"{filename}.PNG")
+        binary_mask_path = os.path.join(
+            dataset_dir, "OTU_2d", "annotations", f"{filename}_binary.PNG"
+        )
+        multiclass_mask_path = os.path.join(
+            dataset_dir, "OTU_2d", "annotations", f"{filename}.PNG"
+        )
         label = int(label_df.loc[label_df["image"] == filename, "label"].values[0])
 
         # Copy the binary masks to the output directory
-        shutil.copyfile(binary_mask_path, os.path.join(output_dir, "masks", "tumor", f"{filename}_binary.png"))
+        shutil.copyfile(
+            binary_mask_path,
+            os.path.join(output_dir, "masks", "tumor", f"{filename}_binary.png"),
+        )
 
         # Load the image
         image = io.imread(image_path)
@@ -166,9 +173,9 @@ def process_examples(dataset_dir, output_dir, split):
 
         # Convert the multi-class masks Save the multi-class masks as PNG files
         multiclass_mask = io.imread(multiclass_mask_path)
-        multiclass_mask = np.apply_along_axis(lambda x: PIXEL_TO_CLASS[tuple(x)], axis=-1, arr=multiclass_mask).astype(
-            np.uint8
-        )
+        multiclass_mask = np.apply_along_axis(
+            lambda x: PIXEL_TO_CLASS[tuple(x)], axis=-1, arr=multiclass_mask
+        ).astype(np.uint8)
         io.imsave(
             os.path.join(output_dir, "masks", "tumor", f"{filename}_multiclass.png"),
             multiclass_mask,
@@ -177,7 +184,11 @@ def process_examples(dataset_dir, output_dir, split):
 
         # Generate the scan mask
         scan_mask = generate_scan_mask(image)
-        io.imsave(os.path.join(output_dir, "masks", "scan", f"{filename}.png"), scan_mask, check_contrast=False)
+        io.imsave(
+            os.path.join(output_dir, "masks", "scan", f"{filename}.png"),
+            scan_mask,
+            check_contrast=False,
+        )
 
         examples.append(
             {
@@ -208,7 +219,11 @@ def main():
     # Divide the training set into training and validation splits
     examples = process_examples(args.dataset_dir, output_dir, "train")
     train_examples, val_examples = train_test_split(
-        examples, test_size=0.2, random_state=42, shuffle=True, stratify=[x["label"] for x in examples]
+        examples,
+        test_size=0.2,
+        random_state=42,
+        shuffle=True,
+        stratify=[x["label"] for x in examples],
     )
 
     for split, examples in zip(["train", "validation"], [train_examples, val_examples]):

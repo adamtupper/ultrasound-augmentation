@@ -54,7 +54,7 @@ def parse_args():
     parser.add_argument(
         "--version",
         type=int,
-        help="The version number to assigne the processed dataset",
+        help="The version number to assign the processed dataset",
         required=True,
     )
 
@@ -127,7 +127,9 @@ def main():
 
     # Create a dataframe of examples
     examples = []
-    for id, label, steatosis_value, frames in zip(patient_ids, labels, steatosis_values, frame_sequences):
+    for id, label, steatosis_value, frames in zip(
+        patient_ids, labels, steatosis_values, frame_sequences
+    ):
         for i in range(frames.shape[0]):
             examples.append(
                 {
@@ -143,17 +145,25 @@ def main():
 
     # Split the dataset into training, validation, and test sets
     splitter = GroupShuffleSplit(n_splits=1, test_size=0.2, random_state=0)
-    train_val_indices, test_indices = next(splitter.split(X=examples, groups=examples["patient"]))
+    train_val_indices, test_indices = next(
+        splitter.split(X=examples, groups=examples["patient"])
+    )
     train_val_examples = examples.iloc[train_val_indices]
     test_examples = examples.iloc[test_indices]
 
     splitter = GroupShuffleSplit(n_splits=1, test_size=0.1, random_state=0)
-    train_indices, val_indices = next(splitter.split(X=train_val_examples, groups=train_val_examples["patient"]))
+    train_indices, val_indices = next(
+        splitter.split(X=train_val_examples, groups=train_val_examples["patient"])
+    )
     train_examples = train_val_examples.iloc[train_indices]
     val_examples = train_val_examples.iloc[val_indices]
 
     # Save the training, validation, and test indices to a JSON file
-    for split, subset in [("train", train_examples), ("validation", val_examples), ("test", test_examples)]:
+    for split, subset in [
+        ("train", train_examples),
+        ("validation", val_examples),
+        ("test", test_examples),
+    ]:
         subset = subset.to_dict(orient="records")
 
         with open(os.path.join(output_dir, f"{split}.json"), "w") as f:

@@ -27,14 +27,12 @@ def objective(trial: optuna.Trial, config: DictConfig) -> float:
     config.weight_decay = trial.suggest_float("weight_decay", 1e-4, 1e-2, log=True)
     config.dropout = trial.suggest_float("dropout", 0.0, 0.5)
 
-    log_message = (
-        "Trial {:} started with parameters: epochs = {}, lr = {:.3e}, weight_decay = {:.3e}, dropout = {:.3f}".format(
-            trial.number,
-            config.epochs,
-            config.lr,
-            config.weight_decay,
-            config.dropout,
-        )
+    log_message = "Trial {:} started with parameters: epochs = {}, lr = {:.3e}, weight_decay = {:.3e}, dropout = {:.3f}".format(
+        trial.number,
+        config.epochs,
+        config.lr,
+        config.weight_decay,
+        config.dropout,
     )
     console_logger.info(log_message)
 
@@ -52,9 +50,11 @@ def objective(trial: optuna.Trial, config: DictConfig) -> float:
     model = instantiate(config.model)
 
     # Setup the trainer
-    checkpoint_callback = ModelCheckpoint(monitor=f"val/{config.key_metric}", mode="max", save_top_k=1)
+    checkpoint_callback = ModelCheckpoint(
+        monitor=f"val/{config.key_metric}", mode="max", save_top_k=1
+    )
     logger = CometLogger(
-        project_name="ultrasound-augmentation",
+        project_name="usaugment-experiments",
         log_code=False,
         log_graph=False,
         auto_log_co2=False,
@@ -79,7 +79,9 @@ def objective(trial: optuna.Trial, config: DictConfig) -> float:
     # Train the model
     trainer.fit(model, train_loader, val_loader)
 
-    console_logger.info(f"Training complete. Best model score: {checkpoint_callback.best_model_score.item():.3f}")
+    console_logger.info(
+        f"Training complete. Best model score: {checkpoint_callback.best_model_score.item():.3f}"
+    )
 
     return checkpoint_callback.best_model_score.item()
 
@@ -88,7 +90,9 @@ def objective(trial: optuna.Trial, config: DictConfig) -> float:
 def main(config: DictConfig) -> None:
     # Check config for missing keys
     if OmegaConf.missing_keys(config):
-        raise RuntimeError(f"Got missing keys in config:\n{OmegaConf.missing_keys(config)}")
+        raise RuntimeError(
+            f"Got missing keys in config:\n{OmegaConf.missing_keys(config)}"
+        )
 
     # Run a single trial
     storage = JournalStorage(JournalFileBackend(config.optuna_log_path))

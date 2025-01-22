@@ -1,9 +1,11 @@
 #!/bin/bash
-#SBATCH --mem=32G
+#SBATCH --job-name=bash
+#SBATCH --mem=24G
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=15
 #SBATCH --gres=gpu:v100:1
-#SBATCH --array 3-15%8
+#SBATCH --array 1-100%2 
+#SBATCH --time=03:00:00
 #SBATCH --mail-type=ALL
 
 # Print Job info
@@ -39,7 +41,7 @@ fi
 
 # Copy data and code to compute node
 tar -xf $project/data/$1.tar.gz -C $SLURM_TMPDIR
-rsync -a $project/ultrasound-augmentation $SLURM_TMPDIR --exclude-from=$project/ultrasound-augmentation/.gitignore
+rsync -a $project/usaugment-experiments $SLURM_TMPDIR --exclude-from=$project/usaugment-experiments/.gitignore
 
 # Create virtual environment
 virtualenv --no-download $SLURM_TMPDIR/env
@@ -47,27 +49,18 @@ source $SLURM_TMPDIR/env/bin/activate
 
 # Install package and dependencies
 pip install --no-index --upgrade pip
-pip install --no-index -r $SLURM_TMPDIR/ultrasound-augmentation/requirements_cc.txt
-pip install --no-index -e $SLURM_TMPDIR/ultrasound-augmentation
+pip install --no-index -r $SLURM_TMPDIR/usaugment-experiments/requirements_cc.txt
+pip install --no-index -e $SLURM_TMPDIR/usaugment-experiments
 
 # Change to working directory
 cd $SLURM_TMPDIR
 
-# Configure TrivialAugment
-augmentation=trivial_augment_$2
-top_n_augmentations=$SLURM_ARRAY_TASK_ID
+# Create output directory
+mkdir -p $scratch/$1/$2
 
-for seed in {1..30}; do
-    # Create output directory
-    mkdir -p $scratch/$1/$2/$augmentation/$top_n_augmentations/$seed
-    
-    # Train model
-    python ultrasound-augmentation/src/usaugment/train.py \
-        output_dir=$scratch/$1/$2/$augmentation/$top_n_augmentations/$seed \
-        data_dir=$SLURM_TMPDIR \
-        task=$2 \
-        augmentation=$augmentation \
-        seed=$seed \
-        top_n_augmentations=$top_n_augmentations
-done
+# Run trial
+python usaugment-experiments/src/usaugment/tune.py \
+    output_dir=$scratch/$1/$2 \
+    data_dir=$SLURM_TMPDIR \
+    task=$2
     

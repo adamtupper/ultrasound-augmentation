@@ -49,7 +49,7 @@ def main(config: DictConfig) -> None:
 
         # Setup the trainer
         logger = CometLogger(
-            project_name="ultrasound-augmentation",
+            project_name="usaugment-experiments",
             log_code=False,
             log_graph=False,
             auto_log_co2=False,

@@ -73,7 +73,7 @@ def parse_args():
     parser.add_argument(
         "--version",
         type=int,
-        help="The version number to assigne the processed dataset",
+        help="The version number to assign the processed dataset",
         required=True,
     )
 
@@ -143,9 +143,15 @@ def main():
     # For each image, create a dictionary containing the associated metadata, and save the image and mask as PNG files
     examples = []
     for i in range(len(dataset["image"])):
-        patient_id, image, mask = dataset["annot_id"].asstr()[i], dataset["image"][i], dataset["mask"][i]
+        patient_id, image, mask = (
+            dataset["annot_id"].asstr()[i],
+            dataset["image"][i],
+            dataset["mask"][i],
+        )
         patient_metadata = metadata[metadata["annot_id"] == patient_id]
-        assert len(patient_metadata) == 1, f"metadata for patient {patient_id} not found"
+        assert len(patient_metadata) == 1, (
+            f"metadata for patient {patient_id} not found"
+        )
 
         if int(patient_id.removesuffix("_")) not in included_patients:
             continue
@@ -162,7 +168,9 @@ def main():
         # Generate the scan mask
         scan_mask = generate_scan_mask(image)
         scan_mask_path = f"masks/scan/{patient_id}{i}.png"
-        io.imsave(os.path.join(output_dir, scan_mask_path), scan_mask, check_contrast=False)
+        io.imsave(
+            os.path.join(output_dir, scan_mask_path), scan_mask, check_contrast=False
+        )
 
         # Create the metadata dictionary
         examples.append(
@@ -183,7 +191,9 @@ def main():
                 "tirads_echogenicity": patient_metadata["ti-rads_echogenicity"].item(),
                 "tirads_shape": patient_metadata["ti-rads_shape"].item(),
                 "tirads_margin": patient_metadata["ti-rads_margin"].item(),
-                "tirads_echogenicfoci": patient_metadata["ti-rads_echogenicfoci"].item(),
+                "tirads_echogenicfoci": patient_metadata[
+                    "ti-rads_echogenicfoci"
+                ].item(),
                 "histopath_diagnosis": patient_metadata["histopath_diagnosis"].item(),
             }
         )
@@ -197,21 +207,31 @@ def main():
     # Confirm the number of patients
     actual = len(examples["patient"].unique())
     expected = len(included_patients)
-    assert actual == expected, f"The actual ({actual}) and expected ({expected}) numbers of patients do not match!"
+    assert actual == expected, (
+        f"The actual ({actual}) and expected ({expected}) numbers of patients do not match!"
+    )
 
     # Split the examples into training, validation, and test sets
     splitter = GroupShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
-    train_val_indices, test_indices = next(splitter.split(X=examples, groups=examples["patient"]))
+    train_val_indices, test_indices = next(
+        splitter.split(X=examples, groups=examples["patient"])
+    )
     train_val_examples = examples.iloc[train_val_indices]
     test_examples = examples.iloc[test_indices]
 
     splitter = GroupShuffleSplit(n_splits=1, test_size=0.1, random_state=42)
-    train_indices, val_indices = next(splitter.split(X=train_val_examples, groups=train_val_examples["patient"]))
+    train_indices, val_indices = next(
+        splitter.split(X=train_val_examples, groups=train_val_examples["patient"])
+    )
     train_examples = train_val_examples.iloc[train_indices]
     val_examples = train_val_examples.iloc[val_indices]
 
     # Save the training, validation, and test examples as JSON files
-    for split, examples in [("train", train_examples), ("validation", val_examples), ("test", test_examples)]:
+    for split, examples in [
+        ("train", train_examples),
+        ("validation", val_examples),
+        ("test", test_examples),
+    ]:
         file_path = os.path.join(output_dir, f"{split}.json")
         with open(file_path, "w") as f:
             json.dump(examples.to_dict(orient="records"), f, indent=4)

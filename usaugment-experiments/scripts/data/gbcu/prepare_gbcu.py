@@ -61,7 +61,7 @@ def parse_args():
     parser.add_argument(
         "--version",
         type=int,
-        help="The version number to assigne the processed dataset",
+        help="The version number to assign the processed dataset",
         required=True,
     )
 
@@ -144,12 +144,19 @@ def main():
     test_set = []
     for filename, label in test_data:
         # Copy the image to the output directory
-        shutil.copy(os.path.join(args.dataset_dir, IMAGE_DIR, filename), os.path.join(output_dir, "images", filename))
+        shutil.copy(
+            os.path.join(args.dataset_dir, IMAGE_DIR, filename),
+            os.path.join(output_dir, "images", filename),
+        )
 
         # Generate the scan mask
         image = skimage.io.imread(os.path.join(output_dir, "images", filename))
         scan_mask = generate_scan_mask(image)
-        skimage.io.imsave(os.path.join(output_dir, "masks", "scan", filename), scan_mask, check_contrast=False)
+        skimage.io.imsave(
+            os.path.join(output_dir, "masks", "scan", filename),
+            scan_mask,
+            check_contrast=False,
+        )
 
         # Create metadata entry
         test_set.append(collate_info(filename, label, bbox_annotations))
@@ -163,19 +170,30 @@ def main():
         train_data = [(image, int(label)) for image, label in csv_reader]
 
     train_images, val_images = train_test_split(
-        train_data, test_size=0.1, random_state=42, shuffle=True, stratify=[label for _, label in train_data]
+        train_data,
+        test_size=0.1,
+        random_state=42,
+        shuffle=True,
+        stratify=[label for _, label in train_data],
     )
 
     for split, data in [("train", train_images), ("validation", val_images)]:
         split_set = []
         for filename, label in data:
             # Copy the image to the output directory
-            shutil.copy(os.path.join(args.dataset_dir, IMAGE_DIR, filename), os.path.join(output_dir, "images"))
+            shutil.copy(
+                os.path.join(args.dataset_dir, IMAGE_DIR, filename),
+                os.path.join(output_dir, "images"),
+            )
 
             # Generate the scan mask
             image = skimage.io.imread(os.path.join(output_dir, "images", filename))
             scan_mask = generate_scan_mask(image)
-            skimage.io.imsave(os.path.join(output_dir, "masks", "scan", filename), scan_mask, check_contrast=False)
+            skimage.io.imsave(
+                os.path.join(output_dir, "masks", "scan", filename),
+                scan_mask,
+                check_contrast=False,
+            )
 
             # Create metadata entry
             split_set.append(collate_info(filename, label, bbox_annotations))

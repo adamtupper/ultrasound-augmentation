@@ -10,6 +10,11 @@ ENV PATH="${PATH}:/home/${USERNAME}/.local/bin"
 ENV TZ=Canada/Eastern
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
+# Install Python 3.11 and non-Python dependencies
+RUN apt-get clean && apt-get update && apt-get install -y software-properties-common net-tools
+RUN add-apt-repository ppa:deadsnakes/ppa
+RUN apt-get clean && apt-get update && apt-get install -y python3.11 python3.11-venv python3.11-dev python3.11-distutils binfmt-support python3-pip git wget texlive-latex-extra
+
 # Create the user
 RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
@@ -21,16 +26,6 @@ USER $USERNAME
 
 # Create workspace directory
 RUN mkdir -p /home/$USERNAME/workspace/
-
-# Install Python 3.11 and non-Python dependencies
-RUN sudo apt-get install -y software-properties-common net-tools
-RUN sudo add-apt-repository ppa:deadsnakes/ppa
-RUN sudo apt-get install -y python3.11 python3.11-venv python3.11-dev python3.11-distutils binfmt-support python3-pip
-RUN sudo apt-get install -y git wget
-
-# Install LaTeX
-RUN sudo apt-get update && sudo apt-get upgrade -y
-RUN sudo apt-get install -y texlive-latex-extra
 
 # Install virtualenv
 RUN pip3 install virtualenv

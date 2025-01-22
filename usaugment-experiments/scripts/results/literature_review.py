@@ -6,9 +6,7 @@ import pandas as pd
 
 # %%
 # Load spreadsheet
-df = pd.read_excel(
-    "../Full-Text Ultrasound Articles Review.xlsx"
-)
+df = pd.read_excel("../Full-Text Ultrasound Articles Review.xlsx")
 df.drop(columns=["Publication Title", "DOI", "URL", "Conference Name"], inplace=True)
 df.rename(
     columns={
@@ -320,7 +318,7 @@ def group_to_short_display_name(augmentations):
 short_display_name_map = {
     "acoustic_shadow_singla2022": "Acoustic shadow",
     "adaptive_gamma_correction_rahman2016": "Adaptive gamma correction",
-    "bilateral_filtering": "Bilateral filtering",
+    "bilateral_filtering": "Speckle reduction",
     "blur": "Blur",
     "brightness_adjustment": "Brightness adj.",
     "center_crop": "Center crop",
@@ -358,14 +356,14 @@ short_display_name_map = {
     "random_erasing": "Random erasing",
     "random_intensity_windowing": "Intensity windowing",
     "random_crop": "Random crop",
-    "resize": "Resize",
+    "resize": "Zoom",
     "rotation": "Rotation",
     "salt_and_pepper_noise": "Salt and pepper noise",
     "sharpen": "Sharpen",
     "shear": "Shear",
     "speckle_noise_addition_wang2022d": "Speckle noise",
     "speckle_parameter_map_augmentation_singla2022": "Speckle parameter map",
-    "speckle_reducing_anisotropic_diffusion_yu2002": "Speckle reduction",
+    "speckle_reducing_anisotropic_diffusion_yu2002": "Speckle noise suppression",  # Used by Monkam et al. (2023)
     "time_gain_compensation_singla2022": "Time gain compensation",
     "translation": "Translation",
     "unsharp_masking_monkam2023a": "Unsharp masking",
@@ -419,7 +417,7 @@ plt.show()
 # %%
 US_SPECIFIC_AUGMENTATIONS = short_display_name_map = {
     "Acoustic shadow",
-    "Bilateral filtering",
+    "Speckle reduction",
     "Cone position adj.",
     "Depth attenuation",
     "Fan-shape preserving zoom",
@@ -433,7 +431,7 @@ US_SPECIFIC_AUGMENTATIONS = short_display_name_map = {
     "Perspective position adj.",
     "Speckle noise",
     "Speckle parameter map",
-    "Speckle reduction",
+    "Speckle noise suppression",
     "Time gain compensation",
 }
 
@@ -465,8 +463,8 @@ my_range = range(0, len(counts.index))
     ordered_df[~ordered_df["ultrasound_specific"]]["usage_count"],
     basefmt=" ",
     markerfmt="o",
-    label="General",
 )
+markerline.set_label("General")
 plt.setp(stemline, linewidth=1.25)
 plt.setp(markerline, markersize=5)
 
@@ -480,8 +478,8 @@ plt.setp(markerline, markersize=5)
     basefmt=" ",
     markerfmt="D",
     linefmt="C1",
-    label="Ultrasound-specific",
 )
+markerline.set_label("Ultrasound-specific")
 plt.setp(stemline, linewidth=1.25)
 plt.setp(markerline, markersize=5)
 

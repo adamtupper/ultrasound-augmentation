@@ -18,8 +18,8 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/adamtupper/ultrasound-augmentation"
-Issues = "https://github.com/adamtupper/ultrasound-augmentation/issues"
+Homepage = "https://github.com/adamtupper/usaugment-experiments"
+Issues = "https://github.com/adamtupper/usaugment-experiments/issues"
 
 [tool.black]
 line-length = 120

@@ -63,7 +63,7 @@ def parse_args():
     parser.add_argument(
         "--version",
         type=int,
-        help="The version number to assigne the processed dataset",
+        help="The version number to assign the processed dataset",
         required=True,
     )
 
@@ -88,7 +88,11 @@ def generate_scan_mask(output_dir: str, rel_image_path: str, rel_mask_path: str)
     image = skimage.io.imread(rel_image_path)
     mask = image > 0  # Threshold the image
     mask = skimage.morphology.convex_hull_image(mask)  # Extract convex hull of the mask
-    skimage.io.imsave(os.path.join(output_dir, rel_mask_path), mask.astype("uint8"), check_contrast=False)
+    skimage.io.imsave(
+        os.path.join(output_dir, rel_mask_path),
+        mask.astype("uint8"),
+        check_contrast=False,
+    )
 
 
 def main():
@@ -120,25 +124,39 @@ def main():
     # Create the scan masks
     mask_dir = os.path.join(output_dir, "masks", "scan")
     os.makedirs(mask_dir, exist_ok=True)
-    df.apply(lambda x: generate_scan_mask(output_dir, x["filepath"], x["scan_mask"]), axis="columns")
+    df.apply(
+        lambda x: generate_scan_mask(output_dir, x["filepath"], x["scan_mask"]),
+        axis="columns",
+    )
 
     # Copy the images to the output directory
     image_dir = os.path.join(output_dir, "images")
     os.makedirs(image_dir, exist_ok=True)
-    df.apply(lambda x: shutil.copy(x["filepath"], os.path.join(image_dir, x["filename"])), axis="columns")
+    df.apply(
+        lambda x: shutil.copy(x["filepath"], os.path.join(image_dir, x["filename"])),
+        axis="columns",
+    )
 
     # Split the dataset into training, validation, and test sets
     test_df = df[df["subset"] == "test"]
     train_val_df = df[df["subset"] == "train"]
 
     splitter = GroupShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
-    train_indices, val_indices = next(splitter.split(X=train_val_df, groups=train_val_df["patient"]))
+    train_indices, val_indices = next(
+        splitter.split(X=train_val_df, groups=train_val_df["patient"])
+    )
     train_df = train_val_df.iloc[train_indices]
     val_df = train_val_df.iloc[val_indices]
 
     # Save the training, validation, and test indices to a JSON file
-    for split, subset in [("train", train_df), ("validation", val_df), ("test", test_df)]:
-        subset = subset.drop(["filepath", "subset", "filename"], axis="columns").to_dict(orient="records")
+    for split, subset in [
+        ("train", train_df),
+        ("validation", val_df),
+        ("test", test_df),
+    ]:
+        subset = subset.drop(
+            ["filepath", "subset", "filename"], axis="columns"
+        ).to_dict(orient="records")
 
         with open(os.path.join(output_dir, f"{split}.json"), "w") as f:
             json.dump(subset, f, indent=4)
