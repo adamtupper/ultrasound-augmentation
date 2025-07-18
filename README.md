@@ -1,7 +1,7 @@
 # Revisiting Data Augmentation for Ultrasound Images
 
 > [!IMPORTANT]
-> This repository serves as a landing page for the packages and official source code for our article [Revisiting Data Augmentation for Ultrasound Images]().
+> This repository serves as a landing page for the packages and official source code for our TMLR article [Revisiting Data Augmentation for Ultrasound Images](https://openreview.net/forum?id=iGcxlTLIL5).
 
 ## `ultrabench`
 
